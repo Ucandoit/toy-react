@@ -16,6 +16,14 @@ export class Component {
     this.children.push(component);
   }
 
+  get vdom() {
+    return this.render().vdom;
+  }
+
+  get vchildren() {
+    return this.children.map((child) => child.vdom);
+  }
+
   setState(newState) {
     if (this.state === null || typeof this.state !== "object") {
       this.state = newState;
