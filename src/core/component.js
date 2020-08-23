@@ -1,8 +1,11 @@
+import { RENDER_TO_DOM } from "./commons";
+
 export class Component {
   constructor() {
     this.props = Object.create(null); // better than {}
     this.children = [];
     this._el = null;
+    this.range = null;
   }
 
   setAttribute(name, value) {
@@ -13,11 +16,33 @@ export class Component {
     this.children.push(component);
   }
 
-  get el() {
-    if (!this._el) {
-      // call render function recrusively to get dom element
-      this._el = this.render().el;
+  setState(newState) {
+    if (this.state === null || typeof this.state !== "object") {
+      this.state = newState;
+      this.rerender();
+      return;
     }
-    return this._el;
+    const merge = (oldState, newState) => {
+      for (const key in newState) {
+        if (oldState[key] === null || typeof oldState[key] !== "object") {
+          oldState[key] = newState[key];
+        } else {
+          merge(oldState[key], newState[key]);
+        }
+      }
+    };
+    merge(this.state, newState);
+    this.rerender();
+  }
+
+  // use symbol to be private
+  [RENDER_TO_DOM](range) {
+    this.range = range;
+    this.render()[RENDER_TO_DOM](range);
+  }
+
+  rerender() {
+    this.range.deleteContents();
+    this[RENDER_TO_DOM](this.range);
   }
 }

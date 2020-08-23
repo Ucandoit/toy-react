@@ -1,12 +1,13 @@
 import { ElementWrapper } from "./element-wrapper";
 import { TextWrapper } from "./text-wrapper";
+import { RENDER_TO_DOM } from "./commons";
 
 const appendChildren = (parent, children) => {
   for (let child of children) {
     if (typeof child === "object" && child instanceof Array) {
       appendChildren(parent, child);
     } else {
-      if (typeof child === "string") {
+      if (typeof child === "string" || typeof child === "number") {
         child = new TextWrapper(child);
       }
       parent.appendChild(child);
@@ -30,5 +31,9 @@ export const createElement = (type, attributes, ...children) => {
 };
 
 export const render = (component, parent) => {
-  parent.appendChild(component.el);
+  const range = document.createRange();
+  range.setStart(parent, 0);
+  range.setEnd(parent, parent.childNodes.length);
+  range.deleteContents();
+  component[RENDER_TO_DOM](range);
 };
