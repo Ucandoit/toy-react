@@ -12,7 +12,11 @@ export class ElementWrapper {
         value
       );
     } else {
-      this.el.setAttribute(name, value);
+      if (name === "className") {
+        this.el.setAttribute("class", value);
+      } else {
+        this.el.setAttribute(name, value);
+      }
     }
   }
 

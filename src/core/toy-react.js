@@ -4,6 +4,9 @@ import { RENDER_TO_DOM } from "./commons";
 
 const appendChildren = (parent, children) => {
   for (let child of children) {
+    if (child === null) {
+      continue;
+    }
     if (typeof child === "object" && child instanceof Array) {
       appendChildren(parent, child);
     } else {
