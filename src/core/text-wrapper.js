@@ -1,4 +1,4 @@
-import { RENDER_TO_DOM } from "./commons";
+import { RENDER_TO_DOM, replaceContent } from "./commons";
 import { Component } from "./component";
 
 export class TextWrapper extends Component {
@@ -6,13 +6,13 @@ export class TextWrapper extends Component {
     super();
     this.type = "#text";
     this.content = content;
-    this.el = document.createTextNode(content);
   }
 
   // use symbol to be private
   [RENDER_TO_DOM](range) {
-    range.deleteContents();
-    range.insertNode(this.el);
+    this.range = range;
+    const el = document.createTextNode(this.content);
+    replaceContent(range, el);
   }
 
   get vdom() {

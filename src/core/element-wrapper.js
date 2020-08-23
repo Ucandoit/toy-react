@@ -1,4 +1,4 @@
-import { RENDER_TO_DOM } from "./commons";
+import { RENDER_TO_DOM, replaceContent } from "./commons";
 import { Component } from "./component";
 
 export class ElementWrapper extends Component {
@@ -8,12 +8,13 @@ export class ElementWrapper extends Component {
   }
 
   get vdom() {
+    this.vchildren = this.children.map((child) => child.vdom);
     return this;
   }
 
   // use symbol to be private
   [RENDER_TO_DOM](range) {
-    range.deleteContents();
+    this.range = range;
 
     const el = document.createElement(this.type);
 
@@ -33,13 +34,17 @@ export class ElementWrapper extends Component {
       }
     }
 
-    for (const child of this.children) {
+    if (!this.vchildren) {
+      this.vchildren = this.children.map((child) => child.vdom);
+    }
+
+    for (const child of this.vchildren) {
       const childRange = document.createRange();
       childRange.setStart(el, el.childNodes.length);
       childRange.setEnd(el, el.childNodes.length);
       child[RENDER_TO_DOM](childRange);
     }
 
-    range.insertNode(el);
+    replaceContent(range, el);
   }
 }
